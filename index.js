@@ -171,6 +171,6 @@ app.delete("/YearlyPlans/:id",async (req,res) => {
     }
 });
 
-app.listen(3002,() => {
+app.listen(process.env.PORT || 3002,() => {
     console.log("webserver on")
 })
