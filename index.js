@@ -91,7 +91,6 @@ app.delete("/WeeklyPlans/:id",async (req,res) => {
 });
 
 // Monthly Plan
-// added
 app.post("/MonthlyPlanform",async (req,res) => {
     try {
         let connection=await mongoClient.connect(URL);
@@ -165,6 +164,86 @@ app.delete("/YearlyPlans/:id",async (req,res) => {
         await db.collection("yearlyplans").deleteOne({_id:mongodb.ObjectId(req.params.id)});
         await connection.close();
         res.json({message:"Yearly Plan deleted"});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:"Something went wrong"});
+    }
+});
+
+// Add Incomes
+app.post("/AddIncomes",async (req,res) => {
+    try {
+        let connection=await mongoClient.connect(URL);
+        let db=connection.db("money");
+        await db.collection("addincomes").insertOne(req.body);
+        await connection.close();
+        res.json({message:"Income Added"});
+    } catch (error) {
+        console.log(error);
+       res.status(500).json({message:"Something went wrong"});
+    }  
+});
+
+app.get("/AddIncomes",async (req,res) => {
+    try {
+        let connection=await mongoClient.connect(URL);
+        let db=connection.db("money");
+        let addincomes=await db.collection("addincomes").find().toArray();
+        await connection.close();
+        res.json(addincomes);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:"Something went wrong"});
+    }
+})
+
+app.delete("/AddIncomes/:id",async (req,res) => {
+    try {
+        let connection=await mongoClient.connect(URL);
+        let db=connection.db("money");
+        await db.collection("addincomes").deleteOne({_id:mongodb.ObjectId(req.params.id)});
+        await connection.close();
+        res.json({message:"Income data deleted"});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:"Something went wrong"});
+    }
+});
+
+// Add Expenses
+app.post("/AddExpenses",async (req,res) => {
+    try {
+        let connection=await mongoClient.connect(URL);
+        let db=connection.db("money");
+        await db.collection("addexpenses").insertOne(req.body);
+        await connection.close();
+        res.json({message:"Expense Added"});
+    } catch (error) {
+        console.log(error);
+       res.status(500).json({message:"Something went wrong"});
+    }  
+});
+
+app.get("/AddExpenses",async (req,res) => {
+    try {
+        let connection=await mongoClient.connect(URL);
+        let db=connection.db("money");
+        let addexpenses=await db.collection("addexpenses").find().toArray();
+        await connection.close();
+        res.json(addexpenses);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:"Something went wrong"});
+    }
+})
+
+app.delete("/AddExpenses/:id",async (req,res) => {
+    try {
+        let connection=await mongoClient.connect(URL);
+        let db=connection.db("money");
+        await db.collection("addexpenses").deleteOne({_id:mongodb.ObjectId(req.params.id)});
+        await connection.close();
+        res.json({message:"Expenses data deleted"});
     } catch (error) {
         console.log(error);
         res.status(500).json({message:"Something went wrong"});
