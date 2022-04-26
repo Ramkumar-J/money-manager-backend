@@ -1,13 +1,11 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-    });
+app.use(
+  cors({
+    origin: "https://voluble-torrone-9375e0.netlify.app"
+  })
+);
 app.use(express.json());
 const mongodb = require("mongodb");
 const mongoClient = mongodb.MongoClient;
