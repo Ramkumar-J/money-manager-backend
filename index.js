@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 app.use(
   cors({
-    origin:"http://localhost:3001"
+    origin:"https://voluble-torrone-9375e0.netlify.app"
   })
 );
 app.use(express.json());
