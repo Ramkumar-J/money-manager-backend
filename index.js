@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 app.use(
   cors({
-    origin:"https://moneymanager-nodeapp.herokuapp.com"
+    origin:"http://localhost:3001"
   })
 );
 app.use(express.json());
