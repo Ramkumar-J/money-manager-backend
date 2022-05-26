@@ -61,7 +61,7 @@ app.get("/DailyPlans/:id", async (req, res) => {
     let db = connection.db("money");
     let dailyplan=await db
       .collection("dailyplans")
-      .findOne({ _id: mongodb.ObjectId(req.params.id) }).toArray();
+      .findOne({ _id: mongodb.ObjectId(req.params.id) });
     await connection.close();
     res.json(dailyplan);
   } catch (error) {
