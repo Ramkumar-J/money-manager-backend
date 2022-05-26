@@ -55,6 +55,21 @@ app.delete("/DailyPlans/:id", async (req, res) => {
   }
 });
 
+app.get("/DailyPlans/:id", async (req, res) => {
+  try {
+    let connection = await mongoClient.connect(URL);
+    let db = connection.db("money");
+    let dailyplan=await db
+      .collection("dailyplans")
+      .findOne({ _id: mongodb.ObjectId(req.params.id) }).toArray();
+    await connection.close();
+    res.json(dailyplan);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+});
+
 // Weekly Plan
 app.post("/WeeklyPlanform", async (req, res) => {
   try {
