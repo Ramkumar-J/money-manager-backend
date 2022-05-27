@@ -280,6 +280,32 @@ app.delete("/AddExpenses/:id", async (req, res) => {
   }
 });
 
+// DailyPlan View
+app.post("/DailyPlanView",async (req,res) => {
+  try {
+    let connection=await mongoClient.connect(URL);
+    let db=connection.db("money");
+    await db.collection("dailyplanview").insertOne(req.body);
+    await connection.close();
+    res.json({message:"DailyPlan inserted successfully"});
+  } catch (error) {
+    res.status(500).json({message:"Something went wrong"});
+  }
+});
+
+app.get("/DailyPlanView",async (req,res) => {
+  try {
+    let connection=await mongoClient.connect(URL);
+    let db=connection.db("money");
+    let dailyview=await db.collection("dailyplanview").find().toArray();
+    await connection.close();
+    res.json(dailyview);
+  } catch (error) {
+    res.status(500).json({message:"Something went wrong"});
+  }
+});
+
+
 app.listen(process.env.PORT || 3002, () => {
   console.log("webserver on");
 });
