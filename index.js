@@ -70,48 +70,6 @@ app.get("/DailyPlans/:id", async (req, res) => {
   }
 });
 
-// Weekly Plan
-app.post("/WeeklyPlanform", async (req, res) => {
-  try {
-    let connection = await mongoClient.connect(URL);
-    let db = connection.db("money");
-    await db.collection("weeklyplans").insertOne(req.body);
-    await connection.close();
-    res.json({ message: "Weekly Plan created" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
-
-app.get("/WeeklyPlans", async (req, res) => {
-  try {
-    let connection = await mongoClient.connect(URL);
-    let db = connection.db("money");
-    let weeklyplans = await db.collection("weeklyplans").find().toArray();
-    await connection.close();
-    res.json(weeklyplans);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
-
-app.delete("/WeeklyPlans/:id", async (req, res) => {
-  try {
-    let connection = await mongoClient.connect(URL);
-    let db = connection.db("money");
-    await db
-      .collection("weeklyplans")
-      .deleteOne({ _id: mongodb.ObjectId(req.params.id) });
-    await connection.close();
-    res.json({ message: "Weekly Plan deleted" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
-
 // Monthly Plan
 app.post("/MonthlyPlanform", async (req, res) => {
   try {
