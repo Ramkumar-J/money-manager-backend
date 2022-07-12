@@ -136,6 +136,7 @@ app.post("/MonthlyPlanform",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
+    req.body.createdBy = req.userId;
     await db.collection("monthlyplans").insertOne(req.body);
     await connection.close();
     res.json({ message: "Monthly Plan created" });
@@ -149,7 +150,7 @@ app.get("/MonthlyPlans",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
-    let monthlyplans = await db.collection("monthlyplans").find().toArray();
+    let monthlyplans = await db.collection("monthlyplans").find({ createdBy: req.userId }).toArray();
     await connection.close();
     res.json(monthlyplans);
   } catch (error) {
@@ -178,6 +179,7 @@ app.post("/YearlyPlanform",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
+    req.body.createdBy = req.userId;
     await db.collection("yearlyplans").insertOne(req.body);
     await connection.close();
     res.json({ message: "Yearly Plan created" });
@@ -191,7 +193,7 @@ app.get("/YearlyPlans",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
-    let yearlyplans = await db.collection("yearlyplans").find().toArray();
+    let yearlyplans = await db.collection("yearlyplans").find({ createdBy: req.userId }).toArray();
     await connection.close();
     res.json(yearlyplans);
   } catch (error) {
@@ -220,6 +222,7 @@ app.post("/AddIncomes",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
+    req.body.createdBy = req.userId;
     await db.collection("addincomes").insertOne(req.body);
     await connection.close();
     res.json({ message: "Income Added" });
@@ -233,7 +236,7 @@ app.get("/AddIncomes", authenticate ,async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
-    let addincomes = await db.collection("addincomes").find().toArray();
+    let addincomes = await db.collection("addincomes").find({ createdBy: req.userId }).toArray();
     await connection.close();
     res.json(addincomes);
   } catch (error) {
@@ -262,6 +265,7 @@ app.post("/AddExpenses",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
+    req.body.createdBy = req.userId;
     await db.collection("addexpenses").insertOne(req.body);
     await connection.close();
     res.json({ message: "Expense Added" });
@@ -275,7 +279,7 @@ app.get("/AddExpenses",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
-    let addexpenses = await db.collection("addexpenses").find().toArray();
+    let addexpenses = await db.collection("addexpenses").find({ createdBy: req.userId }).toArray();
     await connection.close();
     res.json(addexpenses);
   } catch (error) {
