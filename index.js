@@ -4,9 +4,11 @@ const jwt=require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
 app.use(
-  cors({
+  cors(
+    {
     origin:["http://localhost:3000","https://voluble-torrone-9375e0.netlify.app"]
-  })
+  }
+  )
 );
 app.use(express.json());
 const mongodb = require("mongodb");
