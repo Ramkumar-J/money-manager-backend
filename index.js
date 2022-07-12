@@ -1,4 +1,6 @@
 const express = require("express");
+const bcrypt=require("bcryptjs");
+const jwt=require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
 app.use(
@@ -12,9 +14,66 @@ const mongoClient = mongodb.MongoClient;
 const URL =
   "mongodb+srv://ramkumar:admin123@cluster0.5pqfc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
+function authenticate(req,res,next){
+  if(req.headers.authorization){
+    let decode=jwt.verify(req.headers.authorization,"mysecretkey");
+    if(decode){
+      next();
+    }
+    else{
+      res.status(400).json({message:"Unauthorized"});
+    }
+  }
+  else{
+    res.status(400).json({message:"Unauthorized"});
+  }
+}
+
+// Register
+app.post("/register", async (req,res) => {
+  try {
+    let connection=await mongoClient.connect(URL);
+    let db=connection.db("money");
+    let salt=bcrypt.genSaltSync(10);
+    let hash=bcrypt.hashSync(req.body.password,salt);
+    req.body.password=hash;
+    await db.collection("register").insertOne(req.body);
+    await connection.close();
+    res.json({message:"Registered Successfully"});
+  } catch (error) {
+    res.status(500).json({message:"Something went wrong"});
+  }
+});
+
+// Login
+app.post("/login", async (req,res) => {
+  try {
+    let connection=await mongoClient.connect(URL);
+    let db=connection.db("money");
+    let userinfo=await db.collection("register").findOne({email:req.body.email});
+    if(userinfo){
+      let compare=bcrypt.compareSync(req.body.password,userinfo.password);
+      if(compare){
+        let token = jwt.sign({name:userinfo.name,id:userinfo._id}, "mysecretkey");
+        res.json({jwtToken:token});
+      }
+      else{
+        res.status(401).json({message:"Credential not found"})
+      }
+    }
+    else{
+      res.status(401).json({message:"Credential not found"})
+    }
+    await connection.close();
+    res.json({message:"Login Successfully"});
+  } catch (error) {
+    res.status(500).json({message:"Something went wrong"});
+  }
+});
+
 // Homepage
 // Daily Plan
-app.post("/DailyPlanform", async (req, res) => {
+app.post("/DailyPlanform",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -27,7 +86,7 @@ app.post("/DailyPlanform", async (req, res) => {
   }
 });
 
-app.get("/DailyPlans", async (req, res) => {
+app.get("/DailyPlans",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -40,7 +99,7 @@ app.get("/DailyPlans", async (req, res) => {
   }
 });
 
-app.delete("/DailyPlans/:id", async (req, res) => {
+app.delete("/DailyPlans/:id",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -55,7 +114,7 @@ app.delete("/DailyPlans/:id", async (req, res) => {
   }
 });
 
-app.get("/DailyPlans/:id", async (req, res) => {
+app.get("/DailyPlans/:id",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -71,7 +130,7 @@ app.get("/DailyPlans/:id", async (req, res) => {
 });
 
 // Monthly Plan
-app.post("/MonthlyPlanform", async (req, res) => {
+app.post("/MonthlyPlanform",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -84,7 +143,7 @@ app.post("/MonthlyPlanform", async (req, res) => {
   }
 });
 
-app.get("/MonthlyPlans", async (req, res) => {
+app.get("/MonthlyPlans",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -97,7 +156,7 @@ app.get("/MonthlyPlans", async (req, res) => {
   }
 });
 
-app.delete("/MonthlyPlans/:id", async (req, res) => {
+app.delete("/MonthlyPlans/:id",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -113,7 +172,7 @@ app.delete("/MonthlyPlans/:id", async (req, res) => {
 });
 
 // Yearly Plan
-app.post("/YearlyPlanform", async (req, res) => {
+app.post("/YearlyPlanform",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -126,7 +185,7 @@ app.post("/YearlyPlanform", async (req, res) => {
   }
 });
 
-app.get("/YearlyPlans", async (req, res) => {
+app.get("/YearlyPlans",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -139,7 +198,7 @@ app.get("/YearlyPlans", async (req, res) => {
   }
 });
 
-app.delete("/YearlyPlans/:id", async (req, res) => {
+app.delete("/YearlyPlans/:id",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -155,7 +214,7 @@ app.delete("/YearlyPlans/:id", async (req, res) => {
 });
 
 // Add Incomes
-app.post("/AddIncomes", async (req, res) => {
+app.post("/AddIncomes",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -168,7 +227,7 @@ app.post("/AddIncomes", async (req, res) => {
   }
 });
 
-app.get("/AddIncomes", async (req, res) => {
+app.get("/AddIncomes", authenticate ,async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -181,7 +240,7 @@ app.get("/AddIncomes", async (req, res) => {
   }
 });
 
-app.delete("/AddIncomes/:id", async (req, res) => {
+app.delete("/AddIncomes/:id",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -197,7 +256,7 @@ app.delete("/AddIncomes/:id", async (req, res) => {
 });
 
 // Add Expenses
-app.post("/AddExpenses", async (req, res) => {
+app.post("/AddExpenses",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -210,7 +269,7 @@ app.post("/AddExpenses", async (req, res) => {
   }
 });
 
-app.get("/AddExpenses", async (req, res) => {
+app.get("/AddExpenses",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -223,7 +282,7 @@ app.get("/AddExpenses", async (req, res) => {
   }
 });
 
-app.delete("/AddExpenses/:id", async (req, res) => {
+app.delete("/AddExpenses/:id",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
@@ -239,7 +298,7 @@ app.delete("/AddExpenses/:id", async (req, res) => {
 });
 
 // DailyPlan View
-app.post("/DailyPlanView",async (req,res) => {
+app.post("/DailyPlanView",authenticate, async (req,res) => {
   try {
     let connection=await mongoClient.connect(URL);
     let db=connection.db("money");
@@ -251,7 +310,7 @@ app.post("/DailyPlanView",async (req,res) => {
   }
 });
 
-app.get("/DailyPlanView",async (req,res) => {
+app.get("/DailyPlanView",authenticate, async (req,res) => {
   try {
     let connection=await mongoClient.connect(URL);
     let db=connection.db("money");
