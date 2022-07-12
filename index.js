@@ -18,6 +18,7 @@ function authenticate(req,res,next){
   if(req.headers.authorization){
     let decode=jwt.verify(req.headers.authorization,"mysecretkey");
     if(decode){
+      req.userId=decode.id;
       next();
     }
     else{
@@ -77,6 +78,7 @@ app.post("/DailyPlanform",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
+    req.body.createdBy = req.userId;
     await db.collection("dailyplans").insertOne(req.body);
     await connection.close();
     res.json({ message: "Daily Plan created" });
@@ -90,7 +92,7 @@ app.get("/DailyPlans",authenticate, async (req, res) => {
   try {
     let connection = await mongoClient.connect(URL);
     let db = connection.db("money");
-    let dailyplans = await db.collection("dailyplans").find().toArray();
+    let dailyplans = await db.collection("dailyplans").find({ createdBy: req.userId }).toArray();
     await connection.close();
     res.json(dailyplans);
   } catch (error) {
