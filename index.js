@@ -61,6 +61,7 @@ app.post("/login", async (req,res) => {
       if(compare){
         let token = jwt.sign({name:userinfo.name,id:userinfo._id}, "mysecretkey");
         res.json({jwtToken:token});
+        return;
       }
       else{
         res.status(401).json({message:"Credential not found"})
