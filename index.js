@@ -1,4 +1,6 @@
 const express = require("express");
+const dotenv = require("dotenv");
+dotenv.config();
 const bcrypt=require("bcryptjs");
 const jwt=require("jsonwebtoken");
 const app = express();
@@ -331,7 +333,8 @@ app.get("/DailyPlanView",authenticate, async (req,res) => {
   }
 });
 
+const port = process.env.PORT || 3002;
 
-app.listen(process.env.PORT || 3002, () => {
-  console.log("webserver on");
+app.listen(port, () => {
+  console.log(`webserver on at ${port}`);
 });
